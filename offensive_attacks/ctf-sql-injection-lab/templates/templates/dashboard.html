@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - CTF Lab{% endblock %}
+
+{% block content %}
+<h2 style="color: #2c3e50; margin-bottom: 20px;">
+    Welcome, {{ session.username }}! 
+    {% if session.is_admin %}
+        <span style="color: #e74c3c; font-size: 14px;">(Admin)</span>
+    {% endif %}
+</h2>
+
+<div style="display: flex; gap: 20px; margin-bottom: 30px;">
+    <div style="flex: 1;">
+        <h3 style="color: #2c3e50; margin-bottom: 15px;">Post a Message</h3>
+        <form method="POST" action="{{ url_for('post_message') }}">
+            <div class="form-group">
+                <textarea name="message" rows="4" placeholder="What's on your mind?" required></textarea>
+            </div>
+            <button type="submit" class="btn">Post Message</button>
+        </form>
+    </div>
+    
+    <div style="flex: 1;">
+        <h3 style="color: #2c3e50; margin-bottom: 15px;">Quick Search</h3>
+        <form method="GET" action="{{ url_for('search') }}">
+            <div class="form-group">
+                <input type="text" name="q" placeholder="Search messages..." required>
+            </div>
+            <button type="submit" class="btn" style="width: 100%;">Search</button>
+        </form>
+    </div>
+</div>
+
+<h3 style="color: #2c3e50; margin-bottom: 20px;">Recent Messages</h3>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="message">
+            <div class="message-header">{{ message.username }}</div>
+            <div style="margin: 10px 0;">{{ message.message }}</div>
+            <div class="message-time">{{ message.created_at }}</div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div style="text-align: center; padding: 40px; color: #7f8c8d;">
+        <p>No messages yet. Be the first to post something!</p>
+    </div>
+{% endif %}
+
+<div style="margin-top: 30px; padding: 20px; background-color: #e8f5e8; border-radius: 5px; border-left: 4px solid #27ae60;">
+    <h4 style="color: #27ae60; margin-bottom: 10px;">🎯 CTF Objectives</h4>
+    <ul style="color: #2c3e50; margin-left: 20px;">
+        <li>Find a way to bypass authentication</li>
+        <li>Extract sensitive information from the database</li>
+        <li>Gain admin privileges</li>
+        <li>Discover hidden data in the messages table</li>
+    </ul>
+</div>
+{% endblock %}
+
